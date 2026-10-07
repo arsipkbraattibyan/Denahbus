@@ -3,6 +3,7 @@
 <head>
 <base target="_top">
 <meta charset="utf-8">
+<meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Denah Bus Outbound 2026</title>
 <link rel="icon" href="logo.png">
@@ -11,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
+  color-scheme:light;
   --page:#ffffff; --bg:#f3f5fb; --card:#ffffff; --text:#0f172a; --muted:#64748b; --line:#e2e8f0; --line2:#cbd5e1;
   --primary:#4f46e5; --primary-soft:#eef2ff; --danger:#e11d48;
   --murid:#3b82f6; --murid-bg:#dbeafe; --murid-tx:#1e3a8a;
@@ -18,14 +20,6 @@
   --guru:#10b981;  --guru-bg:#d1fae5;  --guru-tx:#065f46;
   --bus:#eaeefa; --shadow:0 10px 30px -12px rgba(30,41,99,.25);
   --sw:70px;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --page:#0b1020; --bg:#0b1020; --card:#141a2f; --text:#e7ebf7; --muted:#97a3c0; --line:#263052; --line2:#34406b;
-    --primary:#818cf8; --primary-soft:#1d2447; --danger:#fb7185;
-    --murid-bg:#1e3a8a55; --murid-tx:#bfdbfe; --wali-bg:#78350f55; --wali-tx:#fde68a; --guru-bg:#06503a66; --guru-tx:#a7f3d0;
-    --bus:#10162b; --shadow:0 10px 30px -12px rgba(0,0,0,.6);
-  }
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -75,7 +69,6 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
 
 /* admin toolbar */
 .admin-bar{background:linear-gradient(135deg,#eef2ff,#f5f3ff);border:1px solid #c7d2fe;border-radius:16px;padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0 12px}
-@media (prefers-color-scheme:dark){.admin-bar{background:#1b2246;border-color:#33408a}}
 .admin-bar .hint{flex:1 1 260px;font-size:13px;color:var(--muted)}
 .admin-bar .hint b{color:var(--primary)}
 .admin-bar .grp{display:flex;gap:8px;flex-wrap:wrap}
