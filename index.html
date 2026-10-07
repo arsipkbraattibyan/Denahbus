@@ -5,6 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Denah Bus Outbond 2026</title>
+<link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -44,7 +45,8 @@ button,input,select{font:inherit;color:inherit}
 /* header */
 .top{max-width:1180px;margin:0 auto;padding:20px 16px 8px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .brand{display:flex;gap:12px;align-items:center;flex:1 1 240px}
-.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:grid;place-items:center;font-size:24px;box-shadow:var(--shadow)}
+.logo{width:46px;height:46px;border-radius:14px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;font-size:24px;box-shadow:var(--shadow);overflow:hidden;padding:4px;flex:0 0 auto}
+.logo img{width:100%;height:100%;object-fit:contain;display:block}
 .brand h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.02em}
 .brand p{margin:2px 0 0;font-size:13px;color:var(--muted)}
 .search{position:relative;flex:1 1 280px;max-width:420px}
@@ -196,7 +198,7 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
   .brand{order:1;flex:1 1 0;min-width:0;gap:10px}
   #adminBtn{order:2;flex:0 0 auto;padding:9px 12px;font-size:13px}
   .search{order:3;flex:1 1 100%;max-width:none}
-  .logo{width:40px;height:40px;font-size:20px;border-radius:12px}
+  .logo{width:40px;height:40px;font-size:20px;border-radius:12px;padding:3px}
   .brand h1{font-size:17px}
   .brand p{font-size:11.5px}
   .card{padding:10px;border-radius:18px}
@@ -228,6 +230,7 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
   .grid{grid-template-columns:1fr}
   .card{box-shadow:none;border:1px solid #ccc}
   .plist{max-height:none}
+  .logo{width:60px;height:60px;box-shadow:none}
 }
 </style>
 </head>
@@ -236,7 +239,7 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
  
 <header class="top no-print">
   <div class="brand">
-    <div class="logo">🚌</div>
+    <div class="logo"><img src="logo.png" alt="Logo sekolah" onerror="this.replaceWith(document.createTextNode('🚌'))"></div>
     <div>
       <h1>Denah Bus Sekolah</h1>
       <p id="school">Cari namamu, temukan kursimu</p>
