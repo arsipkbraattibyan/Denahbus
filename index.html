@@ -102,7 +102,9 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
 .driver{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--muted);background:var(--card);padding:6px 12px;border-radius:12px;border:1px solid var(--line)}
 .door{font-size:12px;font-weight:700;color:var(--muted);border:2px dashed var(--line2);padding:5px 12px;border-radius:10px}
 .brow{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:14px}
-.side{display:flex;gap:8px}
+.side{--gap:8px;display:flex;gap:var(--gap)}
+.doorseat{height:66px;border-radius:13px;border:2px dashed var(--line2);background:var(--card);color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:700}
+.doorseat small{font-size:10px;font-weight:600;opacity:.8}
 .aisle{width:34px;text-align:center;font-size:11px;font-weight:800;color:var(--muted)}
 .back{text-align:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px;padding-top:10px;border-top:2px dashed var(--line2)}
  
@@ -205,7 +207,8 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
   .door{padding:4px 8px;font-size:11px}
   .aisle{width:22px;font-size:10px}
   .brow{gap:4px;margin-bottom:12px}
-  .side{gap:4px}
+  .side{--gap:4px}
+  .doorseat{height:56px;border-radius:10px;border-width:1.5px;font-size:11px}
   .seat{height:56px;border-radius:10px;border-width:1.5px}
   .seat::before{top:-5px;height:6px}
   .seat .code{font-size:9px}
@@ -316,9 +319,14 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
  
   /* ---------- util data ---------- */
   function curBus() { return S.buses.find(function (b) { return b.id === S.busId; }); }
+  /* pintu tengah: sisi kiri pada baris tepat di depan baris paling belakang tidak ada kursi */
+  function isDoorRow(b, r) { return b.baris >= 2 && r === b.baris - 1; }
   function seatsOf(b) {
     var out = [], n = b.kiri + b.kanan;
-    for (var r = 1; r <= b.baris; r++) for (var c = 0; c < n; c++) out.push(r + LETTERS[c]);
+    for (var r = 1; r <= b.baris; r++) for (var c = 0; c < n; c++) {
+      if (isDoorRow(b, r) && c < b.kiri) continue;
+      out.push(r + LETTERS[c]);
+    }
     return out;
   }
   function paxMap(busId) {
@@ -446,9 +454,13 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
     var rows = '';
     for (var r = 1; r <= b.baris; r++) {
       var left = '', right = '';
+      if (isDoorRow(b, r)) {
+        left = '<div class="doorseat" style="width:calc(var(--sw) * ' + b.kiri + ' + var(--gap) * ' + (b.kiri - 1) + ')">🚪 Pintu<small>tengah</small></div>';
+      }
       for (var c = 0; c < b.kiri + b.kanan; c++) {
         var code = r + LETTERS[c];
-        if (c < b.kiri) left += seatHtml(code, m[code]); else right += seatHtml(code, m[code]);
+        if (c < b.kiri) { if (!isDoorRow(b, r)) left += seatHtml(code, m[code]); }
+        else right += seatHtml(code, m[code]);
       }
       rows += '<div class="brow"><div class="side">' + left + '</div><div class="aisle">' + r +
         '</div><div class="side">' + right + '</div></div>';
@@ -489,7 +501,7 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
  
     var tabs = S.buses.map(function (x) {
       return '<button class="tab ' + (x.id === b.id ? 'active' : '') + '" data-bus="' + esc(x.id) + '">' +
-        esc(x.nama) + '<small>' + countFor(x.id) + ' / ' + (x.baris * (x.kiri + x.kanan)) + ' kursi</small></button>';
+        esc(x.nama) + '<small>' + countFor(x.id) + ' / ' + seatsOf(x).length + ' kursi</small></button>';
     }).join('');
  
     var items = list.length ? list.map(function (p) {
