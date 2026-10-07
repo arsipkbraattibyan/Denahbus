@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Denah Bus Sekolah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5fb; --card:#ffffff; --text:#0f172a; --muted:#64748b; --line:#e2e8f0; --line2:#cbd5e1;
+  --primary:#4f46e5; --primary-soft:#eef2ff; --danger:#e11d48;
+  --murid:#3b82f6; --murid-bg:#dbeafe; --murid-tx:#1e3a8a;
+  --wali:#f59e0b;  --wali-bg:#fef3c7;  --wali-tx:#78350f;
+  --guru:#10b981;  --guru-bg:#d1fae5;  --guru-tx:#065f46;
+  --bus:#eaeefa; --shadow:0 10px 30px -12px rgba(30,41,99,.25);
+  --sw:70px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0b1020; --card:#141a2f; --text:#e7ebf7; --muted:#97a3c0; --line:#263052; --line2:#34406b;
+    --primary:#818cf8; --primary-soft:#1d2447; --danger:#fb7185;
+    --murid-bg:#1e3a8a55; --murid-tx:#bfdbfe; --wali-bg:#78350f55; --wali-tx:#fde68a; --guru-bg:#06503a66; --guru-tx:#a7f3d0;
+    --bus:#10162b; --shadow:0 10px 30px -12px rgba(0,0,0,.6);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:hidden}
+.top>*,main>*{min-width:0}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.muted{color:var(--muted)}
+
+/* progress bar */
+#bar{position:fixed;left:0;top:0;height:3px;width:0;background:var(--primary);z-index:100;transition:width .4s}
+#bar.on{width:80%}
+
+/* header */
+.top{max-width:1180px;margin:0 auto;padding:20px 16px 8px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;gap:12px;align-items:center;flex:1 1 240px}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:grid;place-items:center;font-size:24px;box-shadow:var(--shadow)}
+.brand h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.02em}
+.brand p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.search{position:relative;flex:1 1 280px;max-width:420px}
+.search input{width:100%;padding:12px 14px 12px 40px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);outline:none;transition:.15s}
+.search input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-soft)}
+.search::before{content:'🔍';position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px}
+#results{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);display:none;z-index:30;overflow:hidden}
+#results.show{display:block}
+.res{padding:10px 14px;cursor:pointer;display:flex;flex-direction:column;gap:1px;font-size:14px}
+.res span{font-size:12px;color:var(--muted)}
+.res:hover{background:var(--primary-soft)}
+.res.none{cursor:default;color:var(--muted)}
+.res.none:hover{background:none}
+
+.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:600;font-size:14px;cursor:pointer;transition:.15s;display:inline-flex;gap:6px;align-items:center;justify-content:center}
+.btn.primary{background:var(--primary);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:var(--card);border:1.5px solid var(--line);color:var(--text)}
+.btn.ghost:hover{border-color:var(--primary);color:var(--primary)}
+.btn.danger{background:var(--danger);color:#fff}
+.btn.small{padding:8px 12px;font-size:13px}
+.btn.tint{background:var(--primary-soft);color:var(--primary)}
+.btn.tint:hover{filter:brightness(.97)}
+
+main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
+
+/* admin toolbar */
+.admin-bar{background:linear-gradient(135deg,#eef2ff,#f5f3ff);border:1px solid #c7d2fe;border-radius:16px;padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0 12px}
+@media (prefers-color-scheme:dark){.admin-bar{background:#1b2246;border-color:#33408a}}
+.admin-bar .hint{flex:1 1 260px;font-size:13px;color:var(--muted)}
+.admin-bar .hint b{color:var(--primary)}
+.admin-bar .grp{display:flex;gap:8px;flex-wrap:wrap}
+
+/* tabs */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:6px 2px 10px;scrollbar-width:thin}
+.tab{flex:0 0 auto;border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:9px 14px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:1px;font-weight:700;font-size:14px;transition:.15s}
+.tab small{font-weight:500;font-size:11.5px;color:var(--muted)}
+.tab:hover{border-color:var(--primary)}
+.tab.active{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:var(--shadow)}
+.tab.active small{color:#e0e7ff}
+
+/* grid */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow)}
+.card-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px}
+.card-head h2{margin:0;font-size:20px;letter-spacing:-.02em}
+.card-head p{margin:3px 0 0;font-size:13px;color:var(--muted)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;font-weight:600}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:-1px;border:2px solid}
+.legend .l-murid{background:var(--murid-bg);border-color:var(--murid)}
+.legend .l-wali{background:var(--wali-bg);border-color:var(--wali)}
+.legend .l-guru{background:var(--guru-bg);border-color:var(--guru)}
+.legend .l-empty{background:transparent;border:2px dashed var(--line2)}
+
+/* bus */
+.bus-wrap{overflow-x:auto;padding:12px 4px 4px}
+.bus{width:max-content;margin:0 auto;background:var(--bus);border:3px solid var(--line2);border-radius:44px 44px 20px 20px;padding:16px 22px 18px}
+.front{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:6px 8px 14px;margin-bottom:12px;border-bottom:2px dashed var(--line2)}
+.driver{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--muted);background:var(--card);padding:6px 12px;border-radius:12px;border:1px solid var(--line)}
+.door{font-size:12px;font-weight:700;color:var(--muted);border:2px dashed var(--line2);padding:5px 12px;border-radius:10px}
+.brow{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:14px}
+.side{display:flex;gap:8px}
+.aisle{width:34px;text-align:center;font-size:11px;font-weight:800;color:var(--muted)}
+.back{text-align:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px;padding-top:10px;border-top:2px dashed var(--line2)}
+
+.seat{position:relative;width:var(--sw);height:66px;border-radius:13px;border:2px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;user-select:none;transition:transform .12s,box-shadow .12s;outline:none}
+.seat::before{content:'';position:absolute;top:-6px;left:20%;right:20%;height:7px;border-radius:7px 7px 0 0;background:var(--acc,var(--line2))}
+.seat:hover{transform:translateY(-2px);box-shadow:0 8px 16px -8px rgba(0,0,0,.35)}
+.seat:focus-visible{box-shadow:0 0 0 4px var(--primary-soft),0 0 0 6px var(--primary)}
+.seat .short{display:none}
+.seat .code{font-size:10px;font-weight:800;opacity:.65;letter-spacing:.04em}
+.seat .name{font-size:11.5px;font-weight:700;line-height:1.15;text-align:center;padding:0 4px;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
+.seat.murid{background:var(--murid-bg);border-color:var(--murid);color:var(--murid-tx);--acc:var(--murid)}
+.seat.wali{background:var(--wali-bg);border-color:var(--wali);color:var(--wali-tx);--acc:var(--wali)}
+.seat.guru{background:var(--guru-bg);border-color:var(--guru);color:var(--guru-tx);--acc:var(--guru)}
+.seat.empty{background:transparent;border-style:dashed;border-color:var(--line2);color:var(--muted)}
+.seat.empty .name{font-weight:600;font-size:11px}
+.admin .seat.empty:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
+.seat.hl{animation:pulse 1.1s ease-in-out 4;z-index:2}
+.seat.dragging{opacity:.4}
+.seat.over{outline:3px solid var(--primary);outline-offset:2px}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,.6)}50%{box-shadow:0 0 0 12px rgba(99,102,241,0)}}
+
+/* side column */
+.side-col{display:flex;flex-direction:column;gap:16px}
+.stat-big{display:flex;align-items:baseline;gap:6px}
+.stat-big b{font-size:34px;letter-spacing:-.03em}
+.stat-big span{color:var(--muted);font-weight:600}
+.progress{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 14px}
+.progress div{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:99px;transition:width .5s}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stats div{background:var(--bg);border-radius:14px;padding:10px;text-align:center}
+.stats b{display:block;font-size:20px}
+.stats span{font-size:11.5px;color:var(--muted);font-weight:600}
+.list h3{margin:0 0 10px;font-size:15px;display:flex;justify-content:space-between}
+.plist{max-height:420px;overflow:auto;display:flex;flex-direction:column;gap:6px;padding-right:2px}
+.pitem{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--bg);cursor:pointer;transition:.12s}
+.pitem:hover{background:var(--primary-soft)}
+.badge{min-width:38px;text-align:center;font-size:12px;font-weight:800;padding:5px 6px;border-radius:9px;border:1.5px solid}
+.badge.murid{background:var(--murid-bg);border-color:var(--murid);color:var(--murid-tx)}
+.badge.wali{background:var(--wali-bg);border-color:var(--wali);color:var(--wali-tx)}
+.badge.guru{background:var(--guru-bg);border-color:var(--guru);color:var(--guru-tx)}
+.pitem .who{display:flex;flex-direction:column;min-width:0}
+.pitem .who b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pitem .who small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty-state{text-align:center;padding:48px 16px;color:var(--muted)}
+.empty-state .big{font-size:48px}
+.empty-state h2{color:var(--text);margin:8px 0 4px}
+
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(10,14,30,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:60}
+#modal.open{display:flex}
+.sheet{background:var(--card);border-radius:22px;padding:22px;width:min(440px,100%);max-height:92vh;overflow:auto;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);animation:pop .18s ease-out}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+.sheet h3{margin:0 0 6px;font-size:18px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sheet p{margin:0 0 12px;font-size:14px}
+.pill{font-size:12px;font-weight:700;background:var(--primary-soft);color:var(--primary);padding:3px 10px;border-radius:99px}
+.sheet label{display:block;font-size:13px;font-weight:600;margin:12px 0 0}
+.sheet input[type=text],.sheet input[type=password],.sheet input[type=number],.sheet select,.sheet input:not([type]){width:100%;margin-top:6px;padding:11px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);outline:none}
+.sheet input:focus,.sheet select:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-soft)}
+.seg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.seg label{margin:0}
+.seg input{display:none}
+.seg span{display:block;text-align:center;padding:10px 4px;border-radius:12px;border:1.5px solid var(--line);cursor:pointer;font-weight:700;font-size:13px}
+.seg input:checked + span{border-color:var(--primary);background:var(--primary-soft);color:var(--primary)}
+.row2{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.actions .left{margin-right:auto}
+.err{color:var(--danger);font-size:13px;font-weight:600;margin-top:10px;min-height:0}
+.info-card{display:flex;gap:14px;align-items:center;margin:8px 0 4px}
+.info-card .seat-big{width:76px;height:76px;border-radius:18px;display:grid;place-items:center;font-size:22px;font-weight:800;border:2px solid}
+.info-card .seat-big.murid{background:var(--murid-bg);border-color:var(--murid);color:var(--murid-tx)}
+.info-card .seat-big.wali{background:var(--wali-bg);border-color:var(--wali);color:var(--wali-tx)}
+.info-card .seat-big.guru{background:var(--guru-bg);border-color:var(--guru);color:var(--guru-tx)}
+.info-card h4{margin:0;font-size:18px}
+.info-card small{color:var(--muted);font-size:13px}
+
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#0f172a;color:#fff;padding:11px 18px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:90;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+#toast.err{background:var(--danger)}
+
+.skeleton{height:420px;border-radius:22px;background:linear-gradient(90deg,var(--line) 25%,var(--card) 50%,var(--line) 75%);background-size:200% 100%;animation:sh 1.2s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+
+@media (max-width:520px){
+  main{padding:6px 10px 40px}
+  .top{padding:14px 10px 4px;gap:10px}
+  .brand{order:1;flex:1 1 0;min-width:0;gap:10px}
+  #adminBtn{order:2;flex:0 0 auto;padding:9px 12px;font-size:13px}
+  .search{order:3;flex:1 1 100%;max-width:none}
+  .logo{width:40px;height:40px;font-size:20px;border-radius:12px}
+  .brand h1{font-size:17px}
+  .brand p{font-size:11.5px}
+  .card{padding:10px;border-radius:18px}
+  .card-head h2{font-size:18px}
+  .bus-wrap{padding:8px 0 0}
+  /* lebar kursi dihitung otomatis agar denah selalu pas di layar HP */
+  .bus{padding:12px 8px 14px;border-width:2px;border-radius:32px 32px 16px 16px;
+       --sw:min(70px, calc((100vw - 84px - var(--cols,4) * 4px) / var(--cols,4)))}
+  .front{gap:8px;padding:4px 2px 10px}
+  .driver{padding:5px 8px;font-size:11px}
+  .door{padding:4px 8px;font-size:11px}
+  .aisle{width:22px;font-size:10px}
+  .brow{gap:4px;margin-bottom:12px}
+  .side{gap:4px}
+  .seat{height:56px;border-radius:10px;border-width:1.5px}
+  .seat::before{top:-5px;height:6px}
+  .seat .code{font-size:9px}
+  .seat .name{font-size:10px;padding:0 2px}
+  .seat .full{display:none}
+  .seat .short{display:inline}
+  .admin-bar{padding:10px}
+  .admin-bar .grp .btn{flex:1 1 auto}
+  .stat-big b{font-size:28px}
+}
+
+@media print{
+  body{background:#fff}
+  .no-print,.admin-bar,.tabs,#toast,#modal,#bar{display:none!important}
+  .grid{grid-template-columns:1fr}
+  .card{box-shadow:none;border:1px solid #ccc}
+  .plist{max-height:none}
+}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+
+<header class="top no-print">
+  <div class="brand">
+    <div class="logo">🚌</div>
+    <div>
+      <h1>Denah Bus Sekolah</h1>
+      <p id="school">Cari namamu, temukan kursimu</p>
+    </div>
+  </div>
+  <div class="search">
+    <input id="q" type="search" placeholder="Cari nama murid atau wali…" autocomplete="off">
+    <div id="results"></div>
+  </div>
+  <button id="adminBtn" class="btn ghost">🔒 Masuk Guru</button>
+</header>
+
+<main id="app"><div class="skeleton"></div></main>
+<div id="modal"></div>
+<div id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ======= PENGATURAN ======= */
+  var SCHOOL_NAME = 'Nama Sekolah Anda';   // ganti dengan nama sekolah
+  var REFRESH_MS  = 30000;                 // pembaruan otomatis (30 dtk)
+  /* ========================== */
+
+  var LETTERS = 'ABCDEF';
+  var $ = function (s, el) { return (el || document).querySelector(s); };
+  var esc = function (s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  };
+
+  /* panggilan ke Code.gs sebagai Promise */
+  var api = new Proxy({}, {
+    get: function (_, fn) {
+      return function () {
+        var args = arguments;
+        return new Promise(function (ok, no) {
+          google.script.run
+            .withSuccessHandler(ok)
+            .withFailureHandler(function (e) {
+              var m = (e && e.message) ? e.message : String(e);
+              no(new Error(m.replace(/^(Error|Exception):\s*/, '')));
+            })[fn].apply(google.script.run, args);
+        });
+      };
+    }
+  });
+
+  var S = { buses: [], pnp: [], busId: null, admin: false, pin: '', hl: null, sig: '', loaded: false };
+  var drag = null, hlTimer = null, confirmRes = null;
+
+  /* ---------- util data ---------- */
+  function curBus() { return S.buses.find(function (b) { return b.id === S.busId; }); }
+  function seatsOf(b) {
+    var out = [], n = b.kiri + b.kanan;
+    for (var r = 1; r <= b.baris; r++) for (var c = 0; c < n; c++) out.push(r + LETTERS[c]);
+    return out;
+  }
+  function paxMap(busId) {
+    var m = {};
+    S.pnp.forEach(function (p) { if (p.busId === busId) m[p.kursi] = p; });
+    return m;
+  }
+  function tipeCls(t) { return t === 'Wali' ? 'wali' : (t === 'Guru' ? 'guru' : 'murid'); }
+  function infoLabel(t) {
+    return t === 'Wali' ? 'Wali dari (nama murid)' : (t === 'Guru' ? 'Tugas (mis. Pendamping, Wali kelas 5A)' : 'Kelas (mis. 5A)');
+  }
+  function descOf(p) {
+    var i = p.info ? esc(p.info) : '';
+    if (p.tipe === 'Wali') return 'Wali' + (i ? ' dari ' + i : ' murid');
+    if (p.tipe === 'Guru') return 'Guru' + (i ? ' · ' + i : '');
+    return 'Murid' + (i ? ' · ' + i : '');
+  }
+  function shortName(n) {
+    var w = String(n).trim().split(/\s+/);
+    return w.length > 1 ? w[0] + ' ' + w[1].charAt(0).toUpperCase() + '.' : w[0];
+  }
+  function seatKey(code) { return parseInt(code, 10) * 10 + LETTERS.indexOf(code.slice(-1)); }
+  function countFor(busId) { return S.pnp.filter(function (p) { return p.busId === busId; }).length; }
+
+  /* ---------- UI helpers ---------- */
+  function busy(on) { $('#bar').classList.toggle('on', !!on); }
+  var toastT;
+  function toast(msg, type) {
+    var t = $('#toast');
+    t.textContent = msg;
+    t.className = (type === 'err' ? 'err ' : '') + 'show';
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { t.className = ''; }, 3200);
+  }
+  function modal(html) {
+    var m = $('#modal');
+    m.innerHTML = '<div class="sheet" role="dialog" aria-modal="true">' + html + '</div>';
+    m.classList.add('open');
+    var f = m.querySelector('input:not([type=radio]),select,button');
+    if (f) setTimeout(function () { f.focus(); }, 60);
+  }
+  function closeModal() {
+    if (confirmRes) { var r = confirmRes; confirmRes = null; r(false); }
+    var m = $('#modal');
+    m.classList.remove('open');
+    m.innerHTML = '';
+  }
+  function confirmBox(msg, label) {
+    return new Promise(function (res) {
+      confirmRes = res;
+      modal('<h3>Konfirmasi</h3><p>' + msg + '</p><div class="actions">' +
+        '<button class="btn ghost" data-r="0">Batal</button>' +
+        '<button class="btn danger" data-r="1">' + esc(label || 'Ya, lanjutkan') + '</button></div>');
+    });
+  }
+  function updateHeader() {
+    var b = $('#adminBtn');
+    b.textContent = S.admin ? '🔓 Keluar Mode Guru' : '🔒 Masuk Guru';
+    b.className = 'btn ' + (S.admin ? 'tint' : 'ghost');
+  }
+  function logout(silent) {
+    S.admin = false; S.pin = '';
+    updateHeader(); render();
+    if (!silent) toast('Anda sudah keluar dari mode guru');
+  }
+
+  /* ---------- memuat data ---------- */
+  function load(opts) {
+    opts = opts || {};
+    return api.getData().then(function (d) {
+      var sig = JSON.stringify([d.buses, d.penumpang]);
+      if (opts.silent && sig === S.sig) return;
+      S.sig = sig; S.buses = d.buses; S.pnp = d.penumpang; S.loaded = true;
+      if (!curBus()) S.busId = S.buses.length ? S.buses[0].id : null;
+      render();
+    }).catch(function (e) {
+      if (opts.silent) return;
+      if (S.loaded) toast(e.message, 'err');
+      else $('#app').innerHTML = '<div class="empty-state"><div class="big">⚠️</div><h2>Gagal memuat denah</h2><p>' +
+        esc(e.message) + '</p><button class="btn primary" data-act="retry">Coba lagi</button></div>';
+    });
+  }
+
+  /* jalankan aksi guru: loading, pesan, muat ulang */
+  function run(fn, okMsg) {
+    busy(true);
+    return fn().then(function () {
+      closeModal();
+      if (okMsg) toast(okMsg);
+      return load();
+    }).catch(function (e) {
+      toast(e.message, 'err');
+      if (/^PIN salah|^Terlalu banyak/.test(e.message)) { closeModal(); logout(true); }
+    }).then(function () { busy(false); });
+  }
+
+  /* ---------- render ---------- */
+  var WHEEL = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M3 12h7M14 12h7M12 14v7"/></svg>';
+
+  function seatHtml(code, p) {
+    var cls = p ? tipeCls(p.tipe) : 'empty';
+    var hl = S.hl === S.busId + '|' + code ? ' hl' : '';
+    var drg = (S.admin && p) ? ' draggable="true"' : '';
+    var label = p ? '<span class="full">' + esc(p.nama) + '</span><span class="short">' + esc(shortName(p.nama)) + '</span>' : (S.admin ? '+ Isi' : 'Kosong');
+    var title = p ? esc(p.nama + ' (' + p.tipe + ')') : 'Kursi ' + code + ' kosong';
+    return '<div class="seat ' + cls + hl + '" role="button" tabindex="0" data-seat="' + code + '"' + drg +
+      ' title="' + title + '"><span class="code">' + code + '</span><span class="name">' + label + '</span></div>';
+  }
+
+  function busHtml(b, m) {
+    var rows = '';
+    for (var r = 1; r <= b.baris; r++) {
+      var left = '', right = '';
+      for (var c = 0; c < b.kiri + b.kanan; c++) {
+        var code = r + LETTERS[c];
+        if (c < b.kiri) left += seatHtml(code, m[code]); else right += seatHtml(code, m[code]);
+      }
+      rows += '<div class="brow"><div class="side">' + left + '</div><div class="aisle">' + r +
+        '</div><div class="side">' + right + '</div></div>';
+    }
+    return '<div class="bus-wrap"><div class="bus" style="--cols:' + (b.kiri + b.kanan) + '">' +
+      '<div class="front"><div class="driver">' + WHEEL + 'Sopir</div><div class="door">🚪 Pintu</div></div>' +
+      rows + '<div class="back">Belakang</div></div></div>';
+  }
+
+  function render() {
+    var app = $('#app');
+    app.className = S.admin ? 'admin' : '';
+
+    var toolbar = '';
+    if (S.admin) {
+      toolbar = '<div class="admin-bar no-print"><div class="hint"><b>Mode Guru aktif.</b> ' +
+        'Klik kursi untuk mengisi atau mengubah. Seret kursi terisi ke kursi lain untuk memindahkan / menukar.</div>' +
+        '<div class="grp"><button class="btn primary small" data-act="addBus">＋ Tambah Bus</button>' +
+        (curBus() ? '<button class="btn tint small" data-act="editBus">✏️ Atur Bus</button>' : '') +
+        '<button class="btn ghost small" data-act="print">🖨️ Cetak</button>' +
+        '<button class="btn ghost small" data-act="pin">🔑 Ganti PIN</button></div></div>';
+    }
+
+    if (!S.buses.length) {
+      app.innerHTML = toolbar + '<div class="empty-state"><div class="big">🚌</div><h2>Belum ada denah bus</h2><p>' +
+        (S.admin ? 'Klik “Tambah Bus” untuk membuat denah pertama.' : 'Guru belum membuat denah. Silakan cek lagi nanti.') +
+        '</p></div>';
+      return;
+    }
+
+    var b = curBus(), m = paxMap(b.id), seats = seatsOf(b);
+    var list = S.pnp.filter(function (p) { return p.busId === b.id; })
+      .sort(function (x, y) { return seatKey(x.kursi) - seatKey(y.kursi); });
+    var murid = list.filter(function (p) { return p.tipe === 'Murid'; }).length;
+    var wali = list.filter(function (p) { return p.tipe === 'Wali'; }).length;
+    var guru = list.filter(function (p) { return p.tipe === 'Guru'; }).length;
+    var total = seats.length, pct = total ? Math.round(list.length / total * 100) : 0;
+
+    var tabs = S.buses.map(function (x) {
+      return '<button class="tab ' + (x.id === b.id ? 'active' : '') + '" data-bus="' + esc(x.id) + '">' +
+        esc(x.nama) + '<small>' + countFor(x.id) + ' / ' + (x.baris * (x.kiri + x.kanan)) + ' kursi</small></button>';
+    }).join('');
+
+    var items = list.length ? list.map(function (p) {
+      return '<div class="pitem" data-focus="' + p.kursi + '"><span class="badge ' + tipeCls(p.tipe) + '">' +
+        p.kursi + '</span><div class="who"><b>' + esc(p.nama) + '</b><small>' +
+        descOf(p) +
+        '</small></div></div>';
+    }).join('') : '<div class="muted" style="font-size:13px;padding:8px">Belum ada penumpang.</div>';
+
+    app.innerHTML = toolbar +
+      '<nav class="tabs no-print">' + tabs + '</nav>' +
+      '<section class="grid">' +
+        '<div class="card"><div class="card-head"><div><h2>' + esc(b.nama) + '</h2><p>' +
+          (b.ket ? esc(b.ket) : (b.baris + ' baris · susunan ' + b.kiri + '-' + b.kanan)) + '</p></div>' +
+          '<div class="legend"><span><i class="l-murid"></i>Murid</span><span><i class="l-wali"></i>Wali murid</span><span><i class="l-guru"></i>Guru</span><span><i class="l-empty"></i>Kosong</span></div></div>' +
+          busHtml(b, m) + '</div>' +
+        '<aside class="side-col">' +
+          '<div class="card"><div class="stat-big"><b>' + list.length + '</b><span>/ ' + total + ' kursi terisi</span></div>' +
+            '<div class="progress"><div style="width:' + pct + '%"></div></div>' +
+            '<div class="stats"><div><b>' + murid + '</b><span>Murid</span></div><div><b>' + wali + '</b><span>Wali</span></div><div><b>' + guru + '</b><span>Guru</span></div><div><b>' + (total - list.length) + '</b><span>Kosong</span></div></div></div>' +
+          '<div class="card list"><h3><span>Daftar penumpang</span><span class="muted">' + list.length + '</span></h3><div class="plist">' + items + '</div></div>' +
+        '</aside></section>';
+  }
+
+  function focusSeat(busId, code) {
+    S.busId = busId; S.hl = busId + '|' + code;
+    render();
+    var el = document.querySelector('.seat[data-seat="' + code + '"]');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+    clearTimeout(hlTimer);
+    hlTimer = setTimeout(function () {
+      S.hl = null;
+      document.querySelectorAll('.seat.hl').forEach(function (x) { x.classList.remove('hl'); });
+    }, 5000);
+  }
+
+  /* ---------- pencarian ---------- */
+  $('#q').addEventListener('input', function (e) {
+    var q = e.target.value.trim().toLowerCase(), box = $('#results');
+    if (!q) { box.classList.remove('show'); return; }
+    var hits = S.pnp.filter(function (p) { return (p.nama + ' ' + p.info).toLowerCase().indexOf(q) > -1; }).slice(0, 8);
+    box.innerHTML = hits.length ? hits.map(function (p) {
+      var b = S.buses.find(function (x) { return x.id === p.busId; });
+      return '<div class="res" data-b="' + esc(p.busId) + '" data-s="' + esc(p.kursi) + '"><b>' + esc(p.nama) +
+        '</b><span>' + esc(b ? b.nama : '-') + ' · Kursi ' + esc(p.kursi) + ' · ' + esc(p.tipe) + '</span></div>';
+    }).join('') : '<div class="res none">Tidak ditemukan</div>';
+    box.classList.add('show');
+  });
+  $('#results').addEventListener('click', function (e) {
+    var r = e.target.closest('.res[data-b]');
+    if (!r) return;
+    $('#results').classList.remove('show');
+    $('#q').value = '';
+    focusSeat(r.dataset.b, r.dataset.s);
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.search')) $('#results').classList.remove('show');
+  });
+
+  /* ---------- form & dialog ---------- */
+  function openLogin() {
+    modal('<h3>🔐 Masuk sebagai Guru</h3><p class="muted">Masukkan PIN untuk mengatur denah bus.</p>' +
+      '<form id="fLogin"><label>PIN<input type="password" name="pin" inputmode="numeric" autocomplete="off" required></label>' +
+      '<div class="err" id="err"></div><div class="actions"><button type="button" class="btn ghost" data-close>Batal</button>' +
+      '<button class="btn primary">Masuk</button></div></form>');
+  }
+
+  function openInfo(code) {
+    var b = curBus(), p = paxMap(b.id)[code];
+    if (!p) return;
+    var cls = tipeCls(p.tipe);
+    modal('<div class="info-card"><div class="seat-big ' + cls + '">' + code + '</div><div><h4>' + esc(p.nama) + '</h4><small>' +
+      descOf(p) +
+      '</small><br><small>' + esc(b.nama) + ' · Kursi ' + code + '</small></div></div>' +
+      '<div class="actions"><button class="btn primary" data-close>Tutup</button></div>');
+  }
+
+  function openSeatForm(code) {
+    var b = curBus(), m = paxMap(b.id), p = m[code];
+    var free = seatsOf(b).filter(function (s) { return !m[s] || s === code; });
+    var names = S.pnp.filter(function (x) { return x.busId === b.id && x.tipe === 'Murid'; })
+      .map(function (x) { return '<option value="' + esc(x.nama) + '">'; }).join('');
+    var tipe = p ? p.tipe : 'Murid';
+    modal('<h3>' + (p ? 'Ubah penumpang' : 'Isi kursi') + ' <span class="pill">Kursi ' + code + '</span></h3>' +
+      '<form id="fSeat" data-old="' + (p ? code : '') + '">' +
+      '<label>Nama lengkap<input type="text" name="nama" required maxlength="60" autocomplete="off" value="' + esc(p ? p.nama : '') + '"></label>' +
+      '<div class="seg"><label><input type="radio" name="tipe" value="Murid"' + (tipe === 'Murid' ? ' checked' : '') + '><span>🎒 Murid</span></label>' +
+      '<label><input type="radio" name="tipe" value="Wali"' + (tipe === 'Wali' ? ' checked' : '') + '><span>👪 Wali</span></label>' +
+      '<label><input type="radio" name="tipe" value="Guru"' + (tipe === 'Guru' ? ' checked' : '') + '><span>🧑‍🏫 Guru</span></label></div>' +
+      '<label><span id="infoLbl">' + infoLabel(tipe) + '</span>' +
+      '<input type="text" name="info" maxlength="60" autocomplete="off"' + (tipe === 'Wali' ? ' list="dlMurid"' : '') +
+      ' value="' + esc(p ? p.info : '') + '"></label><datalist id="dlMurid">' + names + '</datalist>' +
+      '<label>Kursi<select name="kursi">' + free.map(function (s) {
+        return '<option value="' + s + '"' + (s === code ? ' selected' : '') + '>' + s + (s === code ? ' (saat ini)' : ' — kosong') + '</option>';
+      }).join('') + '</select></label>' +
+      '<div class="actions">' + (p ? '<button type="button" class="btn ghost left" data-act="clear" data-code="' + code + '">Kosongkan</button>' : '') +
+      '<button type="button" class="btn ghost" data-close>Batal</button><button class="btn primary">Simpan</button></div></form>');
+  }
+
+  function openBusForm(editing) {
+    var b = editing ? curBus() : { nama: '', baris: 10, kiri: 2, kanan: 2, ket: '' };
+    modal('<h3>' + (editing ? '✏️ Atur Bus' : '🚌 Tambah Bus') + '</h3>' +
+      '<form id="fBus" data-id="' + (editing ? esc(b.id) : '') + '">' +
+      '<label>Nama bus<input type="text" name="nama" required maxlength="40" value="' + esc(b.nama) + '" placeholder="Bus 1"></label>' +
+      '<div class="row2"><label>Baris<input type="number" name="baris" min="1" max="25" required value="' + b.baris + '"></label>' +
+      '<label>Kursi kiri<input type="number" name="kiri" min="1" max="3" required value="' + b.kiri + '"></label>' +
+      '<label>Kursi kanan<input type="number" name="kanan" min="1" max="3" required value="' + b.kanan + '"></label></div>' +
+      '<label>Keterangan<input type="text" name="ket" maxlength="120" value="' + esc(b.ket) + '" placeholder="Rute Timur · berangkat 06.30"></label>' +
+      '<div class="actions">' + (editing ? '<button type="button" class="btn ghost left" style="color:var(--danger)" data-act="delBus">Hapus bus</button>' : '') +
+      '<button type="button" class="btn ghost" data-close>Batal</button><button class="btn primary">Simpan</button></div></form>');
+  }
+
+  function openPinForm() {
+    modal('<h3>🔑 Ganti PIN</h3><p class="muted">PIN dipakai guru untuk masuk. Minimal 4 karakter.</p>' +
+      '<form id="fPin"><label>PIN baru<input type="password" name="a" required minlength="4" maxlength="20" autocomplete="off"></label>' +
+      '<label>Ulangi PIN baru<input type="password" name="b" required minlength="4" maxlength="20" autocomplete="off"></label>' +
+      '<div class="err" id="err"></div><div class="actions"><button type="button" class="btn ghost" data-close>Batal</button>' +
+      '<button class="btn primary">Simpan PIN</button></div></form>');
+  }
+
+  /* ---------- event: modal ---------- */
+  var modalEl = $('#modal');
+  modalEl.addEventListener('click', function (e) {
+    if (e.target === modalEl || e.target.closest('[data-close]')) { closeModal(); return; }
+    var r = e.target.closest('[data-r]');
+    if (r && confirmRes) { var fn = confirmRes; confirmRes = null; fn(r.dataset.r === '1'); return; }
+    var act = e.target.closest('[data-act]');
+    if (!act) return;
+    if (act.dataset.act === 'clear') {
+      var code = act.dataset.code, p = paxMap(S.busId)[code];
+      confirmBox('Kosongkan kursi <b>' + code + '</b>' + (p ? ' (' + esc(p.nama) + ')' : '') + '?', 'Kosongkan').then(function (ok) {
+        if (ok) run(function () { return api.removePenumpang(S.pin, S.busId, code); }, 'Kursi dikosongkan');
+        else openSeatForm(code);
+      });
+    }
+    if (act.dataset.act === 'delBus') {
+      var b = curBus();
+      confirmBox('Hapus <b>' + esc(b.nama) + '</b> beserta semua penumpangnya? Tindakan ini tidak bisa dibatalkan.', 'Hapus bus').then(function (ok) {
+        if (ok) run(function () { return api.deleteBus(S.pin, b.id); }, 'Bus dihapus');
+        else openBusForm(true);
+      });
+    }
+  });
+  modalEl.addEventListener('change', function (e) {
+    if (e.target.name === 'tipe') {
+      var wali = e.target.value === 'Wali', inp = modalEl.querySelector('input[name=info]');
+      $('#infoLbl').textContent = infoLabel(e.target.value);
+      if (wali) inp.setAttribute('list', 'dlMurid'); else inp.removeAttribute('list');
+    }
+  });
+  modalEl.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = e.target, d = new FormData(f);
+    if (f.id === 'fLogin') {
+      var pin = d.get('pin');
+      busy(true);
+      api.login(pin).then(function () {
+        S.admin = true; S.pin = pin;
+        closeModal(); updateHeader(); render(); toast('Mode guru aktif ✓');
+      }).catch(function (er) {
+        var box = $('#err'); if (box) box.textContent = er.message;
+      }).then(function () { busy(false); });
+    } else if (f.id === 'fSeat') {
+      run(function () {
+        return api.savePenumpang(S.pin, {
+          busId: S.busId, oldKursi: f.dataset.old, kursi: d.get('kursi'),
+          nama: d.get('nama'), tipe: d.get('tipe'), info: d.get('info')
+        });
+      }, 'Tersimpan ✓');
+    } else if (f.id === 'fBus') {
+      var id = f.dataset.id;
+      run(function () {
+        return api.saveBus(S.pin, {
+          id: id || '', nama: d.get('nama'), baris: Number(d.get('baris')),
+          kiri: Number(d.get('kiri')), kanan: Number(d.get('kanan')), ket: d.get('ket')
+        }).then(function (newId) { if (!id) S.busId = newId; });
+      }, 'Bus tersimpan ✓');
+    } else if (f.id === 'fPin') {
+      if (d.get('a') !== d.get('b')) { $('#err').textContent = 'PIN tidak sama.'; return; }
+      var np = d.get('a');
+      busy(true);
+      api.changePin(S.pin, np).then(function () {
+        S.pin = np; closeModal(); toast('PIN diganti ✓');
+      }).catch(function (er) { $('#err').textContent = er.message; })
+        .then(function () { busy(false); });
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && modalEl.classList.contains('open')) closeModal();
+  });
+
+  /* ---------- event: halaman ---------- */
+  var app = $('#app');
+  app.addEventListener('click', function (e) {
+    var t;
+    if ((t = e.target.closest('[data-bus]'))) { S.busId = t.dataset.bus; S.hl = null; render(); return; }
+    if ((t = e.target.closest('.seat'))) {
+      var code = t.dataset.seat;
+      if (S.admin) openSeatForm(code);
+      else if (paxMap(S.busId)[code]) openInfo(code);
+      return;
+    }
+    if ((t = e.target.closest('[data-focus]'))) { focusSeat(S.busId, t.dataset.focus); return; }
+    if ((t = e.target.closest('[data-act]'))) {
+      var a = t.dataset.act;
+      if (a === 'addBus') openBusForm(false);
+      else if (a === 'editBus') openBusForm(true);
+      else if (a === 'pin') openPinForm();
+      else if (a === 'print') window.print();
+      else if (a === 'retry') { app.innerHTML = '<div class="skeleton"></div>'; load(); }
+    }
+  });
+  app.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('seat')) {
+      e.preventDefault(); e.target.click();
+    }
+  });
+
+  /* seret & lepas (komputer/tablet) */
+  app.addEventListener('dragstart', function (e) {
+    var s = e.target.closest('.seat[draggable]');
+    if (!s) return;
+    drag = s.dataset.seat;
+    e.dataTransfer.setData('text/plain', drag);
+    e.dataTransfer.effectAllowed = 'move';
+    s.classList.add('dragging');
+  });
+  app.addEventListener('dragover', function (e) {
+    if (!drag) return;
+    var s = e.target.closest('.seat');
+    if (s) { e.preventDefault(); s.classList.add('over'); }
+  });
+  app.addEventListener('dragleave', function (e) {
+    var s = e.target.closest('.seat');
+    if (s) s.classList.remove('over');
+  });
+  app.addEventListener('drop', function (e) {
+    var s = e.target.closest('.seat');
+    if (!s || !drag) return;
+    e.preventDefault();
+    var from = drag, to = s.dataset.seat;
+    drag = null;
+    if (from === to) { render(); return; }
+    run(function () { return api.movePenumpang(S.pin, S.busId, from, to); }, 'Kursi dipindahkan ✓');
+  });
+  app.addEventListener('dragend', function () {
+    drag = null;
+    document.querySelectorAll('.dragging,.over').forEach(function (x) { x.classList.remove('dragging', 'over'); });
+  });
+
+  /* tombol guru di header */
+  $('#adminBtn').addEventListener('click', function () {
+    if (S.admin) logout(); else openLogin();
+  });
+
+  /* ---------- mulai ---------- */
+  $('#school').textContent = SCHOOL_NAME + ' · cari namamu, temukan kursimu';
+  updateHeader();
+  load();
+  setInterval(function () {
+    if (document.hidden || modalEl.classList.contains('open') || drag) return;
+    load({ silent: true });
+  }, REFRESH_MS);
+})();
+</script>
+</body>
+</html>
