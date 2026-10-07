@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f3f5fb; --card:#ffffff; --text:#0f172a; --muted:#64748b; --line:#e2e8f0; --line2:#cbd5e1;
+  --page:#ffffff; --bg:#f3f5fb; --card:#ffffff; --text:#0f172a; --muted:#64748b; --line:#e2e8f0; --line2:#cbd5e1;
   --primary:#4f46e5; --primary-soft:#eef2ff; --danger:#e11d48;
   --murid:#3b82f6; --murid-bg:#dbeafe; --murid-tx:#1e3a8a;
   --wali:#f59e0b;  --wali-bg:#fef3c7;  --wali-tx:#78350f;
@@ -21,7 +21,7 @@
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --bg:#0b1020; --card:#141a2f; --text:#e7ebf7; --muted:#97a3c0; --line:#263052; --line2:#34406b;
+    --page:#0b1020; --bg:#0b1020; --card:#141a2f; --text:#e7ebf7; --muted:#97a3c0; --line:#263052; --line2:#34406b;
     --primary:#818cf8; --primary-soft:#1d2447; --danger:#fb7185;
     --murid-bg:#1e3a8a55; --murid-tx:#bfdbfe; --wali-bg:#78350f55; --wali-tx:#fde68a; --guru-bg:#06503a66; --guru-tx:#a7f3d0;
     --bus:#10162b; --shadow:0 10px 30px -12px rgba(0,0,0,.6);
@@ -32,7 +32,7 @@ html,body{margin:0}
 html{-webkit-text-size-adjust:100%}
 body{overflow-x:hidden}
 .top>*,main>*{min-width:0}
-body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--page);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 button,input,select{font:inherit;color:inherit}
 .muted{color:var(--muted)}
 .field{width:100%;margin-top:6px;padding:11px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--text);outline:none}
