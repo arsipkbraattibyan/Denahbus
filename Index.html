@@ -257,7 +257,7 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
 
   /* ======= PENGATURAN ======= */
   var SCHOOL_NAME = 'Nama Sekolah Anda';   // ganti dengan nama sekolah
-  var REFRESH_MS  = 30000;                 // pembaruan otomatis (30 dtk)
+  var REFRESH_MS  = 60000;                 // pembaruan otomatis (60 dtk)
   /* ========================== */
 
   var LETTERS = 'ABCDEF';
@@ -268,22 +268,38 @@ main{max-width:1180px;margin:0 auto;padding:8px 16px 48px}
     });
   };
 
-  /* panggilan ke Code.gs sebagai Promise */
-  var api = new Proxy({}, {
-    get: function (_, fn) {
-      return function () {
-        var args = arguments;
-        return new Promise(function (ok, no) {
-          google.script.run
-            .withSuccessHandler(ok)
-            .withFailureHandler(function (e) {
-              var m = (e && e.message) ? e.message : String(e);
-              no(new Error(m.replace(/^(Error|Exception):\s*/, '')));
-            })[fn].apply(google.script.run, args);
-        });
-      };
+  /* ======= PENGHUBUNG KE GOOGLE APPS SCRIPT ======= */
+  // Tempel URL Web App Anda di sini (berakhiran /exec)
+  var API_URL = 'GANTI_DENGAN_URL_WEB_APP_ANDA';
+
+  function unwrap(j) {
+    if (!j || j.ok !== true) throw new Error((j && j.error) ? j.error : 'Respon server tidak valid.');
+    return j.data;
+  }
+  function netError() {
+    return new Error('Tidak bisa terhubung ke server. Periksa API_URL di index.html dan pastikan akses Web App = Anyone.');
+  }
+  function rpc(action, args) {
+    if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(API_URL)) {
+      return Promise.reject(new Error('API_URL di index.html belum diisi dengan URL Web App (berakhiran /exec).'));
     }
-  });
+    var req = action === 'getData'
+      ? fetch(API_URL + '?action=getData&_=' + Date.now())
+      : fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: action, args: args })
+        });
+    return req
+      .catch(function () { throw netError(); })
+      .then(function (r) { return r.json().catch(function () { throw netError(); }); })
+      .then(unwrap);
+  }
+  var api = { getData: function () { return rpc('getData', []); } };
+  ['login', 'savePenumpang', 'movePenumpang', 'removePenumpang', 'saveBus', 'deleteBus', 'changePin']
+    .forEach(function (n) {
+      api[n] = function () { return rpc(n, Array.prototype.slice.call(arguments)); };
+    });
 
   var S = { buses: [], pnp: [], busId: null, admin: false, pin: '', hl: null, sig: '', loaded: false };
   var drag = null, hlTimer = null, confirmRes = null;
